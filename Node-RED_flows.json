@@ -1,0 +1,342 @@
+[
+    {
+        "id": "1ace5c59.695484",
+        "type": "json",
+        "z": "99b284ee31407dae",
+        "g": "79a180eeaafa0f51",
+        "name": "jsonConv",
+        "property": "payload",
+        "action": "obj",
+        "pretty": false,
+        "x": 420,
+        "y": 360,
+        "wires": [
+            [
+                "45fb353b.fb9fa4"
+            ]
+        ]
+    },
+    {
+        "id": "45fb353b.fb9fa4",
+        "type": "function",
+        "z": "99b284ee31407dae",
+        "g": "79a180eeaafa0f51",
+        "name": "create tele msg",
+        "func": "var str = msg.topic;\nvar array = str.split('/')\nvar myDevice = array[2];\n\nif (!flow.get(\"tasmota_devices\")) {\n    flow.set(\"tasmota_devices\", new Set());\n}\nflow.get(\"tasmota_devices\").add(myDevice);\n\nvar sensorData = {\n    device: myDevice,\n    event: 'tele',\n    power: msg.payload.ENERGY.Power,\n    today: msg.payload.ENERGY.Today,\n    yesterday: msg.payload.ENERGY.Yesterday,\n    total: msg.payload.ENERGY.Total\n}\nmsg.payload = sensorData;\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 600,
+        "y": 360,
+        "wires": [
+            [
+                "425da8c2.71d728",
+                "7030ae083c93acb0"
+            ]
+        ]
+    },
+    {
+        "id": "6f4455a9.5c694c",
+        "type": "mqtt in",
+        "z": "99b284ee31407dae",
+        "g": "79a180eeaafa0f51",
+        "name": "",
+        "topic": "house/tele/+/SENSOR",
+        "qos": "2",
+        "broker": "341b138f.603aec",
+        "inputs": 0,
+        "x": 160,
+        "y": 360,
+        "wires": [
+            [
+                "1ace5c59.695484"
+            ]
+        ]
+    },
+    {
+        "id": "425da8c2.71d728",
+        "type": "debug",
+        "z": "99b284ee31407dae",
+        "g": "79a180eeaafa0f51",
+        "name": "energy tele",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 810,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "7030ae083c93acb0",
+        "type": "influxdb out",
+        "z": "99b284ee31407dae",
+        "g": "79a180eeaafa0f51",
+        "influxdb": "b9a5009ab2f652f5",
+        "name": "energyTele",
+        "measurement": "energyTele",
+        "precision": "",
+        "retentionPolicy": "",
+        "database": "database",
+        "precisionV18FluxV20": "ms",
+        "retentionPolicyV18Flux": "",
+        "org": "organisation",
+        "bucket": "bucket",
+        "x": 810,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "21b0f588355ef1c6",
+        "type": "mqtt in",
+        "z": "99b284ee31407dae",
+        "g": "79a180eeaafa0f51",
+        "name": "",
+        "topic": "house/stat/+/STATUS10",
+        "qos": "2",
+        "broker": "341b138f.603aec",
+        "inputs": 0,
+        "x": 160,
+        "y": 540,
+        "wires": [
+            [
+                "1aaf315ee286f6dd"
+            ]
+        ]
+    },
+    {
+        "id": "9752eaa88288e1c2",
+        "type": "function",
+        "z": "99b284ee31407dae",
+        "g": "79a180eeaafa0f51",
+        "name": "create tele msg",
+        "func": "var str = msg.topic;\nvar array = str.split('/')\nvar myDevice = array[2];\n\nif (!flow.get(\"tasmota_devices\")) {\n    flow.set(\"tasmota_devices\", new Set());\n}\nflow.get(\"tasmota_devices\").add(myDevice);\n\nvar sensorData = {\n    device: myDevice,\n    event: 'tele',\n    power: msg.payload.StatusSNS.ENERGY.Power,\n    today: msg.payload.StatusSNS.ENERGY.Today,\n    yesterday: msg.payload.StatusSNS.ENERGY.Yesterday,\n    total: msg.payload.StatusSNS.ENERGY.Total\n}\nmsg.payload = sensorData;\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 580,
+        "y": 540,
+        "wires": [
+            [
+                "5b2dc01f8336d629",
+                "945de42ed2717fb7"
+            ]
+        ]
+    },
+    {
+        "id": "1aaf315ee286f6dd",
+        "type": "json",
+        "z": "99b284ee31407dae",
+        "g": "79a180eeaafa0f51",
+        "name": "jsonConv",
+        "property": "payload",
+        "action": "obj",
+        "pretty": false,
+        "x": 400,
+        "y": 540,
+        "wires": [
+            [
+                "9752eaa88288e1c2"
+            ]
+        ]
+    },
+    {
+        "id": "5b2dc01f8336d629",
+        "type": "influxdb out",
+        "z": "99b284ee31407dae",
+        "g": "79a180eeaafa0f51",
+        "influxdb": "b9a5009ab2f652f5",
+        "name": "energyDaily",
+        "measurement": "energyDaily",
+        "precision": "",
+        "retentionPolicy": "",
+        "database": "database",
+        "precisionV18FluxV20": "ms",
+        "retentionPolicyV18Flux": "",
+        "org": "organisation",
+        "bucket": "bucket",
+        "x": 810,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "945de42ed2717fb7",
+        "type": "debug",
+        "z": "99b284ee31407dae",
+        "g": "79a180eeaafa0f51",
+        "name": "energy Daily",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 810,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "96f072632d7f8389",
+        "type": "chronos-scheduler",
+        "z": "99b284ee31407dae",
+        "g": "79a180eeaafa0f51",
+        "name": "Schedule - 23:58:02",
+        "config": "b6db3ecaecccf880",
+        "schedule": [
+            {
+                "trigger": {
+                    "type": "crontab",
+                    "value": "2  58  23  *  *  *  *"
+                },
+                "output": {
+                    "type": "msg",
+                    "property": {
+                        "name": "payload",
+                        "type": "str",
+                        "value": "1"
+                    }
+                }
+            }
+        ],
+        "multiPort": false,
+        "nextEventPort": false,
+        "disabled": false,
+        "outputs": 1,
+        "x": 160,
+        "y": 460,
+        "wires": [
+            [
+                "d6c71512fa95a794"
+            ]
+        ]
+    },
+    {
+        "id": "d6c71512fa95a794",
+        "type": "function",
+        "z": "99b284ee31407dae",
+        "g": "79a180eeaafa0f51",
+        "name": "loop devices - CMND STATUS 10",
+        "func": "for(const device of flow.get(\"tasmota_devices\")) {\n    // emit trigger\n    msg.topic = \"house/cmnd/\" + device + \"/STATUS\";\n    msg.payload = 10;\n    node.send(msg)\n}\nreturn;// msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 500,
+        "y": 460,
+        "wires": [
+            [
+                "a4dee37da8b4e7bf",
+                "f36795ad847e8d51"
+            ]
+        ]
+    },
+    {
+        "id": "a4dee37da8b4e7bf",
+        "type": "debug",
+        "z": "99b284ee31407dae",
+        "g": "79a180eeaafa0f51",
+        "name": "loop over devices",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 830,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "f36795ad847e8d51",
+        "type": "mqtt out",
+        "z": "99b284ee31407dae",
+        "g": "79a180eeaafa0f51",
+        "name": "",
+        "topic": "",
+        "qos": "0",
+        "retain": "false",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "941c1361428a4866",
+        "x": 790,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "341b138f.603aec",
+        "type": "mqtt-broker",
+        "name": "Pandora",
+        "broker": "192.168.178.20",
+        "port": "1883",
+        "clientid": "",
+        "usetls": false,
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": ""
+    },
+    {
+        "id": "b9a5009ab2f652f5",
+        "type": "influxdb",
+        "hostname": "127.0.0.1",
+        "port": "8086",
+        "protocol": "http",
+        "database": "house",
+        "name": "InfluxDB House",
+        "usetls": false,
+        "tls": "",
+        "influxdbVersion": "1.x",
+        "url": "http://localhost:8086",
+        "rejectUnauthorized": true
+    },
+    {
+        "id": "b6db3ecaecccf880",
+        "type": "chronos-config",
+        "name": "ChronosCFG",
+        "timezone": "",
+        "sunPositions": []
+    },
+    {
+        "id": "941c1361428a4866",
+        "type": "mqtt-broker",
+        "name": "Pandora",
+        "broker": "192.168.178.20",
+        "port": "1883",
+        "clientid": "",
+        "usetls": false,
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": ""
+    }
+]
